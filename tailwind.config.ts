@@ -1,0 +1,88 @@
+import type { Config } from "tailwindcss";
+
+export default {
+  darkMode: ["class"],
+  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}", "./index.html"],
+  prefix: "",
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: { "2xl": "1400px" },
+    },
+    extend: {
+      colors: {
+        background: "#f8fafb",
+        "on-background": "#2d3435",
+        surface: "#f8fafb",
+        "surface-dim": "#d4dbde",
+        "surface-bright": "#f8fafb",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-low": "#f1f4f5",
+        "surface-container": "#eaeef0",
+        "surface-container-high": "#e4e9eb",
+        "surface-container-highest": "#dde4e6",
+        "on-surface": "#2d3435",
+        "on-surface-variant": "#596062",
+        "inverse-surface": "#0b0f10",
+        "inverse-on-surface": "#9a9d9e",
+        
+        primary: "#15696d",
+        "on-primary": "#e4feff",
+        "primary-container": "#a0e9ed",
+        "on-primary-container": "#00575b",
+        "primary-fixed": "#a0e9ed",
+        "on-primary-fixed": "#004346",
+        "primary-dim": "#005d61",
+        "on-primary-fixed-variant": "#056266",
+        
+        secondary: "#006f1d",
+        "on-secondary": "#eaffe2",
+        "secondary-container": "#94f990",
+        "on-secondary-container": "#006017",
+        "secondary-fixed": "#94f990",
+        "on-secondary-fixed": "#004a10",
+        "secondary-dim": "#006118",
+        "secondary-fixed-dim": "#86eb83",
+        "on-secondary-fixed-variant": "#006b1b",
+        
+        tertiary: "#0062a5",
+        "on-tertiary": "#f7f9ff",
+        "tertiary-container": "#82bdff",
+        "on-tertiary-container": "#003862",
+        "tertiary-fixed": "#82bdff",
+        "on-tertiary-fixed": "#00223e",
+        "tertiary-dim": "#005691",
+        "tertiary-fixed-dim": "#63b0ff",
+        "on-tertiary-fixed-variant": "#004171",
+        
+        error: "#ac3434",
+        "on-error": "#fff7f6",
+        "error-container": "#f56965",
+        "on-error-container": "#65000b",
+        "error-dim": "#70030f",
+        
+        outline: "#757c7e",
+        "outline-variant": "#acb3b5",
+        "surface-tint": "#15696d",
+        
+        border: "#acb3b5",
+        input: "#acb3b5",
+        ring: "#15696d",
+      },
+      fontFamily: {
+        headline: ["Manrope", "sans-serif"],
+        body: ["Plus Jakarta Sans", "sans-serif"],
+        label: ["Plus Jakarta Sans", "sans-serif"],
+        manrope: ["Manrope", "sans-serif"],
+      },
+      borderRadius: {
+        lg: "0.5rem",
+        md: "calc(0.5rem - 2px)",
+        sm: "calc(0.5rem - 4px)",
+        xl: "1.5rem",
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config;

@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-on-surface font-body;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  }
+  
+  .aqi-gradient-track {
+    background: linear-gradient(90deg, #4ade80 0%, #facc15 50%, #f87171 100%);
+  }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .aqi-gauge-bg {
+    stroke: #e2e8f0;
+    stroke-dasharray: 100, 100;
+  }
+
+  .sparkline {
+    fill: none;
+    stroke: theme('colors.primary');
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  /* Keep basic scrollbar styling for webkit */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-dim;
+    border-radius: 3px;
+  }
+}
