@@ -8,12 +8,15 @@ interface InsightInput {
   temperature: number; // Celsius
   humidity: number; // %
   dominantPollutant: string;
+  forecastWind?: number;
+  forecastTemp?: number;
 }
 
 export interface SmartInsight {
   reason: string;
   recommendation: string;
   type: 'favorable' | 'unfavorable' | 'critical';
+  forecastReasoning?: string;
 }
 
 /**
@@ -23,13 +26,26 @@ export interface SmartInsight {
  * Rule: High Humidity + PM = Particulate Swelling/Retention
  */
 export function generateInsights(input: InsightInput): SmartInsight {
-  const { aqi, windSpeed, temperature, humidity, dominantPollutant } = input;
+  const { aqi, windSpeed, temperature, humidity, dominantPollutant, forecastWind, forecastTemp } = input;
   
   const insights: SmartInsight = {
     reason: "Atmospheric conditions are stable, keeping pollution levels within normal ranges for the current time of day.",
     recommendation: "Excellent day for outdoor activities. No specific precautions needed.",
     type: 'favorable'
   };
+
+  // Forecast Logic
+  if (forecastWind !== undefined && forecastTemp !== undefined) {
+    if (forecastWind < 5 && forecastTemp > 30) {
+      insights.forecastReasoning = "Tomorrow expect an increase in AQI due to low wind and high temperatures.";
+    } else if (forecastWind > 15 && forecastTemp < 25) {
+      insights.forecastReasoning = "Tomorrow expect a decrease in AQI due to strong dispersing winds and cooler temperatures.";
+    } else if (forecastWind < 5 && forecastTemp < 15) {
+      insights.forecastReasoning = "Tomorrow expect stable or slightly worse AQI due to cold temperature inversions trapping pollutants.";
+    } else {
+      insights.forecastReasoning = "Tomorrow's atmospheric conditions appear stable with moderate wind and temperature dispersion.";
+    }
+  }
 
   // 1. Critical Level (Hazardous/Very Unhealthy)
   if (aqi > 200) {

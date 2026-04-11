@@ -15,6 +15,17 @@ export function usePopularCities() {
   });
 }
 
+export function useWorldCities() {
+  const cities = ['New York', 'London', 'Tokyo', 'Paris', 'Beijing', 'Sydney'];
+  return useQueries({
+    queries: cities.map(city => ({
+      queryKey: ['aqi-city', city],
+      queryFn: () => fetchAQIByCity(city),
+      staleTime: 30 * 60 * 1000, // 30 mins
+    }))
+  });
+}
+
 export function useAQI() {
   const location = useAppStore(s => s.location);
   return useQuery({

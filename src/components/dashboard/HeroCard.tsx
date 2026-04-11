@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAQI, useWeather } from '@/hooks/useDataHooks';
 import { getAQIColor, getAQIText } from '@/utils/colorMap';
 import { getStatusTheme } from '@/utils/aqiUtils';
+import { toast } from 'sonner';
 
 const HeroCard = () => {
   const { data: aqiData, isLoading: aqiLoading } = useAQI();
   const { data: weatherData, isLoading: weatherLoading } = useWeather();
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackGiven, setFeedbackGiven] = useState<string | null>(null);
 
   if (aqiLoading || weatherLoading) {
     return <div className="lg:col-span-8 bg-surface-container-lowest rounded-[1.5rem] p-10 shadow-sm flex items-center justify-center animate-pulse h-80">
@@ -28,6 +31,14 @@ const HeroCard = () => {
   const aqiColor = getAQIColor(aqiValue);
   const aqiText = getAQIText(aqiValue);
   const statusTheme = getStatusTheme(aqiData.status);
+
+  const handleFeedbackSubmit = (type: string) => {
+    setFeedbackGiven(type);
+    setShowFeedback(false);
+    toast.success("Thank you for your feedback!", {
+      description: `You reported: ${type}`
+    });
+  };
 
   return (
     <div className="lg:col-span-8 bg-surface-container-lowest rounded-[2.5rem] p-10 shadow-sm border border-outline-variant/5 relative overflow-hidden group">
@@ -61,6 +72,30 @@ const HeroCard = () => {
               <span className="material-symbols-outlined text-[14px]">source</span>
               Source: {aqiData.source === 'OpenWeather' ? 'OpenWeather (Estimated)' : 'WAQI Station'}
             </span>
+            
+            {/* Feedback Button */}
+            <div className="relative">
+              <button 
+                onClick={() => setShowFeedback(!showFeedback)}
+                className={`text-[10px] font-bold px-2.5 py-1 rounded-full border transition-colors flex items-center gap-1 ${feedbackGiven ? 'border-green-500/20 bg-green-500/10 text-green-600 hover:bg-green-500/20' : 'border-primary/20 bg-primary/5 text-primary hover:bg-primary/10'}`}
+              >
+                {feedbackGiven ? <span className="text-[12px]">✅</span> : <span className="material-symbols-outlined text-[12px]">feedback</span>}
+                {feedbackGiven ? 'Rated' : 'Rate Air'}
+              </button>
+              
+              {showFeedback && (
+                <div className="absolute top-full left-0 mt-2 bg-surface p-3 rounded-2xl shadow-xl border border-outline-variant/10 z-50 w-48 animate-in fade-in zoom-in-95">
+                  <p className="text-[10px] font-bold text-outline uppercase tracking-widest mb-2">
+                    {feedbackGiven ? "Change Rating?" : "How is the air?"}
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    <button onClick={() => handleFeedbackSubmit("Clean")} className={`text-xs text-left px-2 py-1.5 rounded-lg transition-colors ${feedbackGiven === 'Clean' ? 'bg-surface-container-highest font-bold' : 'hover:bg-surface-container'}`}>✨ Feels Clean</button>
+                    <button onClick={() => handleFeedbackSubmit("Smoggy")} className={`text-xs text-left px-2 py-1.5 rounded-lg transition-colors ${feedbackGiven === 'Smoggy' ? 'bg-surface-container-highest font-bold' : 'hover:bg-surface-container'}`}>🌫️ Smoggy/Hazy</button>
+                    <button onClick={() => handleFeedbackSubmit("Bad Smell")} className={`text-xs text-left px-2 py-1.5 rounded-lg transition-colors ${feedbackGiven === 'Bad Smell' ? 'bg-surface-container-highest font-bold' : 'hover:bg-surface-container'}`}>🤢 Bad Smell</button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-end gap-6 mb-10">
@@ -107,7 +142,7 @@ const HeroCard = () => {
           
           <button 
             onClick={() => window.print()}
-            className="flex items-center gap-2 bg-on-surface text-surface px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-lg active:scale-95"
+            className="flex items-center gap-2 bg-on-surface text-surface px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-lg active:scale-95 print:hidden"
           >
             <span className="material-symbols-outlined text-[16px]">picture_as_pdf</span>
             Full Report

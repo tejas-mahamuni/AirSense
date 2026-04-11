@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { usePopularCities } from '@/hooks/useDataHooks';
+import { usePopularCities, useWorldCities } from '@/hooks/useDataHooks';
 import { useAppStore } from '@/store/useAppStore';
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 
@@ -95,8 +95,7 @@ const MiniSparkline = ({ data, color }: { data: number[]; color: string }) => {
   );
 };
 
-export default function PopularCities() {
-  const results = usePopularCities();
+const CityCarousel = ({ title, results, subtitle }: { title: string, results: any[], subtitle: string }) => {
   const setLocation = useAppStore(s => s.setLocation);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -107,7 +106,7 @@ export default function PopularCities() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-lg font-bold font-headline text-on-surface">🏛️ Popular Cities in India</h2>
+        <h2 className="text-lg font-bold font-headline text-on-surface">{title}</h2>
         <div className="flex gap-2">
           <button onClick={() => scroll(-1)} className="p-2 rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant">
             <ChevronLeft size={18} />
@@ -171,7 +170,7 @@ export default function PopularCities() {
                   <MapPin size={14} className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                 </h3>
                 <p className="text-xs text-on-surface-variant flex items-center gap-1 mt-0.5 font-medium">
-                  <span className="text-sm">🇮🇳</span> India
+                  <span className="text-sm">{subtitle.split(' ')[0]}</span> {subtitle.substring(subtitle.indexOf(' ') + 1)}
                 </p>
               </div>
 
@@ -193,6 +192,18 @@ export default function PopularCities() {
           );
         })}
       </div>
+    </div>
+  );
+};
+
+export default function PopularCities() {
+  const indianCities = usePopularCities();
+  const worldCities = useWorldCities();
+
+  return (
+    <div className="space-y-8">
+      <CityCarousel title="🏛️ Popular Cities in India" results={indianCities} subtitle="🇮🇳 India" />
+      <CityCarousel title="🌎 World's Most Active Cities" results={worldCities} subtitle="🌐 Global" />
     </div>
   );
 }
