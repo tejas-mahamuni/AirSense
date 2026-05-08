@@ -70,7 +70,7 @@ export function analyzePollutantContributions(
     if (!val?.v) continue;
     contributions.push({
       name: labelMap[key] || key.toUpperCase(),
-      value: Math.round(val.v * 10) / 10,
+      value: parseFloat(val.v.toFixed(2)),
       unit: key === 'co' ? 'mg/m³' : 'μg/m³',
       percentage: Math.round((val.v / total) * 100),
       primarySource: sourceMap[key] || 'Multiple sources',

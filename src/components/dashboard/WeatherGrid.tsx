@@ -76,7 +76,7 @@ export default function WeatherGrid() {
   const pressureSpark = forecastSlice.map(f => f.pressure);
 
   const cards: CardData[] = [
-    { icon: <Wind size={18} />, label: 'Wind Speed', value: `${weather.wind_speed.toFixed(1)} km/h`, impact: getImpact('wind', weather.wind_speed), sparkline: windSpark },
+    { icon: <Wind size={18} />, label: 'Wind Speed', value: `${weather.wind_speed.toFixed(2)} km/h`, impact: getImpact('wind', weather.wind_speed), sparkline: windSpark },
     { icon: <Thermometer size={18} />, label: 'Temperature', value: `${Math.round(weather.temp)}°C`, impact: getImpact('temp', weather.temp), sparkline: tempSpark },
     { icon: <Droplets size={18} />, label: 'Humidity', value: `${weather.humidity}%`, impact: getImpact('humidity', weather.humidity), sparkline: humiditySpark },
     { icon: <Eye size={18} />, label: 'Visibility', value: `${weather.visibility} km`, impact: getImpact('visibility', weather.visibility), sparkline: [] },

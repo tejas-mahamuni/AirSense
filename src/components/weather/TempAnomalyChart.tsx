@@ -42,7 +42,7 @@ const TempAnomalyChart: React.FC<TempAnomalyChartProps> = ({ actual }) => {
           <div className="flex flex-col">
             <span className="text-[10px] font-bold text-outline uppercase tracking-tighter mb-0.5">Departure</span>
             <span className={`text-xl font-black ${isHigh ? 'text-error' : 'text-primary'}`}>
-              {isHigh ? '+' : ''}{difference.toFixed(1)}°C
+              {isHigh ? '+' : ''}{difference.toFixed(2)}°C
             </span>
           </div>
           <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${isHigh ? 'bg-error/10 text-error' : 'bg-primary/10 text-primary'}`}>

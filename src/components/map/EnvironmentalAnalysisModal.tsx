@@ -143,7 +143,7 @@ const EnvironmentalAnalysisModal: React.FC<EnvironmentalAnalysisModalProps> = ({
                       <div key={idx} className="space-y-1.5">
                         <div className="flex justify-between text-[11px] font-bold uppercase tracking-tighter">
                           <span className="text-on-surface">{pollutant.name}</span>
-                          <span className="text-outline">{pollutant.value} {pollutant.unit}</span>
+                          <span className="text-outline">{pollutant.value.toFixed(2)} {pollutant.unit}</span>
                         </div>
                         <div className="h-2 w-full bg-surface-container rounded-full overflow-hidden">
                           <motion.div 

@@ -15,7 +15,7 @@ export default function AQIMap() {
   const { data: stations } = useNearbyStations();
   const { data: mainAQI } = useAQI();
   const { data: weatherData } = useWeather();
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStation, setSelectedStation] = useState<any>(null);
   const [isFetchingFull, setIsFetchingFull] = useState(false);
@@ -47,7 +47,7 @@ export default function AQIMap() {
       const aqi = Number(station.aqi);
       const color = getAQIColor(aqi);
       const name = isMain ? (station.city?.name || location.city) : (station.station?.name || "Station");
-      const source = isMain 
+      const source = isMain
         ? (station.source === "OpenWeather" ? "📡 OpenWeather (Estimated)" : "🏢 WAQI Station")
         : "🏢 WAQI Station";
       const temp = isMain ? weatherData?.temp : station.temp;
@@ -112,10 +112,10 @@ export default function AQIMap() {
               try {
                 setIsFetchingFull(true);
                 toast.loading("Analyzing local atmosphere...", { id: "analysis-loading" });
-                
+
                 // Fetch full feed for this station
                 const fullData = await fetchAQIByGeo(station.lat, station.lon);
-                
+
                 setSelectedStation({
                   stationName: fullData.station || station.station?.name || "Nearby Station",
                   aqi: fullData.aqi,
@@ -128,7 +128,7 @@ export default function AQIMap() {
                   lastUpdated: fullData.lastUpdated || new Date().toISOString(),
                   source: fullData.source === "OpenWeather" ? "OpenWeather (Estimated)" : "WAQI Station"
                 });
-                
+
                 toast.dismiss("analysis-loading");
                 setIsModalOpen(true);
               } catch (err) {
@@ -167,7 +167,7 @@ export default function AQIMap() {
           color: color,
           weight: 0,
         }).addTo(map);
-        
+
         let grow = true;
         const interval = setInterval(() => {
           const radius = pulse.getRadius();
@@ -179,7 +179,7 @@ export default function AQIMap() {
             if (radius < 18) grow = true;
           }
         }, 50);
-        
+
         mainMarker.on('remove', () => clearInterval(interval));
       }
 
@@ -218,7 +218,7 @@ export default function AQIMap() {
   return (
     <div className="h-full w-full">
       <div ref={mapRef} className="h-full w-full" />
-      
+
       {selectedStation && (
         <EnvironmentalAnalysisModal
           isOpen={isModalOpen}
@@ -226,7 +226,7 @@ export default function AQIMap() {
           data={selectedStation}
         />
       )}
-      
+
       {isFetchingFull && (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[10000] flex items-center justify-center pointer-events-none">
           <div className="bg-surface-container-lowest p-6 rounded-3xl shadow-2xl flex flex-col items-center gap-4 animate-in fade-in zoom-in">

@@ -23,7 +23,7 @@ export function detectTemperatureAnomaly(actual: number): AnomalyData {
   return {
     value: actual,
     average,
-    departure: parseFloat(departure.toFixed(1)),
+    departure: parseFloat(departure.toFixed(2)),
     status,
     isPositive: departure > 0
   };
