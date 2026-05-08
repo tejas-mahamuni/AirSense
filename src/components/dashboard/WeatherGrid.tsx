@@ -1,6 +1,16 @@
 import React from 'react';
-import { useWeather, useForecast } from '@/hooks/useDataHooks';
+import { useWeather, useForecast, useAQI } from '@/hooks/useDataHooks';
 import { Wind, Thermometer, Droplets, Eye, Gauge, CloudDrizzle } from 'lucide-react';
+import ElNinoStatus from '../weather/ElNinoStatus';
+import HeatwaveAlert from '../weather/HeatwaveAlert';
+import HeatIndexCard from '../weather/HeatIndexCard';
+import ClimateRiskCard from '../weather/ClimateRiskCard';
+import HumanPrecautions from '../weather/HumanPrecautions';
+import GovernmentAdvisory from '../weather/GovernmentAdvisory';
+import TempAnomalyChart from '../weather/TempAnomalyChart';
+import ClimateInsights from '../weather/ClimateInsights';
+import EnvironmentalImpact from '../weather/EnvironmentalImpact';
+import { calculateHeatIndex } from '@/utils/heatwaveLogic';
 
 interface CardData {
   icon: React.ReactNode;
@@ -40,6 +50,7 @@ function MiniSparkline({ data, color }: { data: number[]; color: string }) {
 export default function WeatherGrid() {
   const { data: weather, isLoading } = useWeather();
   const { data: forecast } = useForecast();
+  const { data: aqiData } = useAQI();
 
   if (isLoading || !weather) {
     return (
@@ -73,29 +84,132 @@ export default function WeatherGrid() {
     { icon: <CloudDrizzle size={18} />, label: 'Dew Point', value: `${weather.dew_point}°C`, impact: getImpact('dew', weather.dew_point || 0), sparkline: [] },
   ];
 
+  const heatIndex = calculateHeatIndex(weather.temp, weather.humidity);
+
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-bold font-headline text-on-surface px-1">🌡️ Weather Conditions</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {cards.map((card, i) => (
-          <div
-            key={card.label}
-            className="bg-surface-container-lowest rounded-[1.5rem] p-4 shadow-sm border border-outline-variant/10 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-on-surface-variant">{card.icon}</div>
-              <MiniSparkline data={card.sparkline} color={card.impact.color} />
-            </div>
-            <p className="text-xs text-on-surface-variant mb-1 font-label">{card.label}</p>
-            <p className="text-xl font-bold font-headline text-on-surface mb-2">{card.value}</p>
-            <span
-              className="text-[10px] font-semibold px-2 py-0.5 rounded-full font-label"
-              style={{ background: card.impact.color + '18', color: card.impact.color }}
+    <div className="space-y-10">
+      {/* 🌡️ Standard Weather Metrics (Top row for quick check) */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-bold font-headline text-on-surface px-1 uppercase tracking-widest">🌡️ Live Weather Metrics</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {cards.map((card, i) => (
+            <div
+              key={card.label}
+              className="bg-surface-container-lowest rounded-[1.5rem] p-4 shadow-sm border border-outline-variant/10 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
             >
-              {card.impact.emoji} {card.impact.label}
-            </span>
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-on-surface-variant">{card.icon}</div>
+                <MiniSparkline data={card.sparkline} color={card.impact.color} />
+              </div>
+              <p className="text-[10px] text-on-surface-variant mb-1 font-bold uppercase tracking-tighter">{card.label}</p>
+              <p className="text-xl font-bold font-headline text-on-surface mb-2 leading-none">{card.value}</p>
+              <span
+                className="text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter"
+                style={{ background: card.impact.color + '18', color: card.impact.color }}
+              >
+                {card.impact.emoji} {card.impact.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 🌍 Climate Risk & El Niño Advisory Banner */}
+      <div className="bg-surface-container-low rounded-[3rem] p-6 md:p-10 border border-outline-variant/10 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full -mr-48 -mt-48 pointer-events-none"></div>
+        
+        <div className="relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary text-3xl">public</span>
+              </div>
+              <div>
+                <h2 className="text-2xl font-black font-headline text-on-surface tracking-tight uppercase tracking-widest leading-none mb-1">Climate Risk & El Niño Advisory</h2>
+                <p className="text-[10px] font-bold text-outline uppercase tracking-[0.2em]">Research-Oriented Environmental Intelligence</p>
+              </div>
+            </div>
           </div>
-        ))}
+
+          <HeatwaveAlert heatIndex={heatIndex} />
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Left Section - Main Analysis */}
+            <div className="lg:col-span-8 flex flex-col gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <ClimateRiskCard 
+                  aqi={aqiData?.aqi || 0} 
+                  heatIndex={heatIndex} 
+                  humidity={weather.humidity} 
+                  windSpeed={weather.wind_speed} 
+                />
+                <div className="flex flex-col gap-8">
+                  <HeatIndexCard temp={weather.temp} humidity={weather.humidity} />
+                  <ElNinoStatus temp={weather.temp} />
+                </div>
+              </div>
+              
+              <ClimateInsights 
+                temp={weather.temp} 
+                humidity={weather.humidity} 
+                windSpeed={weather.wind_speed} 
+                aqi={aqiData?.aqi || 0} 
+              />
+            </div>
+
+            {/* Right Section - Charts & Impact */}
+            <div className="lg:col-span-4 flex flex-col gap-8">
+              <TempAnomalyChart actual={weather.temp} />
+              <div className="p-6 rounded-[2rem] bg-surface-container-lowest border border-outline-variant/5">
+                <h4 className="text-[10px] font-black text-outline uppercase tracking-widest mb-4">Risk Factors Observed</h4>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-error">thermostat</span>
+                    <div>
+                      <p className="text-xs font-bold text-on-surface">Thermal Retention</p>
+                      <p className="text-[10px] text-on-surface-variant font-medium">Urban heat island effect peak</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-warning">humidity_mid</span>
+                    <div>
+                      <p className="text-xs font-bold text-on-surface">Latent Heat Stress</p>
+                      <p className="text-[10px] text-on-surface-variant font-medium">Moisture trapping heat energy</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary">air</span>
+                    <div>
+                      <p className="text-xs font-bold text-on-surface">Aerosol Concentration</p>
+                      <p className="text-[10px] text-on-surface-variant font-medium">Poor dispersion due to low wind</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Impact Analysis Section */}
+          <div className="mt-8">
+            <EnvironmentalImpact 
+              temp={weather.temp} 
+              aqi={aqiData?.aqi || 0} 
+              heatIndex={heatIndex} 
+            />
+          </div>
+
+          {/* Action Panels */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
+            <HumanPrecautions 
+              temp={weather.temp} 
+              humidity={weather.humidity} 
+              heatIndex={heatIndex} 
+              aqi={aqiData?.aqi || 0}
+              windSpeed={weather.wind_speed}
+            />
+            <GovernmentAdvisory heatIndex={heatIndex} />
+          </div>
+        </div>
       </div>
     </div>
   );
