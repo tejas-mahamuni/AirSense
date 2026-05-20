@@ -70,8 +70,8 @@ export default function AQIMap() {
 
           ${temp ? `
             <div style="display: flex; gap: 10px; margin-bottom: 12px; border-top: 1px solid #eee; pt: 8px; padding-top: 8px;">
-              <div style="font-size: 11px; color: #596062;">🌡️ <b>${temp}°C</b></div>
-              <div style="font-size: 11px; color: #596062;">💧 <b>${humidity || 0}%</b></div>
+              <div style="font-size: 11px; color: #596062;">🌡️ <b>${Number(temp).toFixed(1)}°C</b></div>
+              <div style="font-size: 11px; color: #596062;">💧 <b>${Math.round(humidity || 0)}%</b></div>
             </div>
           ` : ''}
 

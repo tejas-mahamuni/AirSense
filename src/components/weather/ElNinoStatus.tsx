@@ -15,16 +15,16 @@ const ElNinoStatus: React.FC<ElNinoStatusProps> = ({ temp }) => {
   let color = "#34C759";
   let icon = "eco";
 
-  if (anomaly > 3) {
-    status = "Weak El Niño";
-    impact = "Higher temperatures & dry conditions possible. Increased urban heat stress.";
-    color = "#FF9F0A";
-    icon = "wb_sunny";
-  } else if (anomaly > 5) {
+  if (anomaly > 5) {
     status = "Strong El Niño";
     impact = "Extreme heat risks and reduced rainfall. Severe environmental impact.";
     color = "#FF453A";
     icon = "hot_tub";
+  } else if (anomaly > 3) {
+    status = "Weak El Niño";
+    impact = "Higher temperatures & dry conditions possible. Increased urban heat stress.";
+    color = "#FF9F0A";
+    icon = "wb_sunny";
   } else if (anomaly < -3) {
     status = "La Niña";
     impact = "Cooler temperatures and increased rainfall likelihood.";

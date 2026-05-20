@@ -76,12 +76,12 @@ export default function WeatherGrid() {
   const pressureSpark = forecastSlice.map(f => f.pressure);
 
   const cards: CardData[] = [
-    { icon: <Wind size={18} />, label: 'Wind Speed', value: `${weather.wind_speed.toFixed(2)} km/h`, impact: getImpact('wind', weather.wind_speed), sparkline: windSpark },
-    { icon: <Thermometer size={18} />, label: 'Temperature', value: `${Math.round(weather.temp)}°C`, impact: getImpact('temp', weather.temp), sparkline: tempSpark },
-    { icon: <Droplets size={18} />, label: 'Humidity', value: `${weather.humidity}%`, impact: getImpact('humidity', weather.humidity), sparkline: humiditySpark },
-    { icon: <Eye size={18} />, label: 'Visibility', value: `${weather.visibility} km`, impact: getImpact('visibility', weather.visibility), sparkline: [] },
-    { icon: <Gauge size={18} />, label: 'Pressure', value: `${weather.pressure} hPa`, impact: getImpact('pressure', weather.pressure), sparkline: pressureSpark },
-    { icon: <CloudDrizzle size={18} />, label: 'Dew Point', value: `${weather.dew_point}°C`, impact: getImpact('dew', weather.dew_point || 0), sparkline: [] },
+    { icon: <Wind size={18} />, label: 'Wind Speed', value: `${Number(weather.wind_speed).toFixed(1)} km/h`, impact: getImpact('wind', weather.wind_speed), sparkline: windSpark },
+    { icon: <Thermometer size={18} />, label: 'Temperature', value: `${Number(weather.temp).toFixed(1)}°C`, impact: getImpact('temp', weather.temp), sparkline: tempSpark },
+    { icon: <Droplets size={18} />, label: 'Humidity', value: `${Math.round(weather.humidity)}%`, impact: getImpact('humidity', weather.humidity), sparkline: humiditySpark },
+    { icon: <Eye size={18} />, label: 'Visibility', value: `${Number(weather.visibility).toFixed(1)} km`, impact: getImpact('visibility', weather.visibility), sparkline: [] },
+    { icon: <Gauge size={18} />, label: 'Pressure', value: `${Math.round(weather.pressure)} hPa`, impact: getImpact('pressure', weather.pressure), sparkline: pressureSpark },
+    { icon: <CloudDrizzle size={18} />, label: 'Dew Point', value: `${Number(weather.dew_point || 0).toFixed(1)}°C`, impact: getImpact('dew', weather.dew_point || 0), sparkline: [] },
   ];
 
   const heatIndex = calculateHeatIndex(weather.temp, weather.humidity);

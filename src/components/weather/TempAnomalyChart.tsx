@@ -28,7 +28,7 @@ const TempAnomalyChart: React.FC<TempAnomalyChartProps> = ({ actual }) => {
 
           {/* Today Bar */}
           <div className="flex flex-col items-center flex-1 max-w-[80px]">
-            <span className={`text-sm font-black mb-2 ${isHigh ? 'text-error' : 'text-primary'}`}>{actual}°C</span>
+            <span className={`text-sm font-black mb-2 ${isHigh ? 'text-error' : 'text-primary'}`}>{actual.toFixed(1)}°C</span>
             <motion.div 
               initial={{ height: 0 }}
               animate={{ height: `${Math.max(20, (actual / 45) * 100)}%` }}
@@ -42,7 +42,7 @@ const TempAnomalyChart: React.FC<TempAnomalyChartProps> = ({ actual }) => {
           <div className="flex flex-col">
             <span className="text-[10px] font-bold text-outline uppercase tracking-tighter mb-0.5">Departure</span>
             <span className={`text-xl font-black ${isHigh ? 'text-error' : 'text-primary'}`}>
-              {isHigh ? '+' : ''}{difference.toFixed(2)}°C
+              {isHigh ? '+' : ''}{difference.toFixed(1)}°C
             </span>
           </div>
           <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${isHigh ? 'bg-error/10 text-error' : 'bg-primary/10 text-primary'}`}>

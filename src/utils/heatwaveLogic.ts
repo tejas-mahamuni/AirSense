@@ -28,7 +28,7 @@ export function calculateHeatIndex(tempC: number, humidity: number): number {
   if (tempF < 80) {
     // Use simple formula for lower temperatures
     const hif = 0.5 * (tempF + 61 + ((tempF - 68) * 1.2) + (rh * 0.094));
-    return ((hif - 32) * 5) / 9;
+    return parseFloat((((hif - 32) * 5) / 9).toFixed(1));
   }
 
   // Full Rothfusz regression
@@ -50,8 +50,8 @@ export function calculateHeatIndex(tempC: number, humidity: number): number {
     hi += ((rh - 85) / 10) * ((87 - tempF) / 5);
   }
 
-  // Convert back to Celsius
-  return Math.round(((hi - 32) * 5) / 9);
+  // Convert back to Celsius — round to 1 decimal
+  return parseFloat((((hi - 32) * 5) / 9).toFixed(1));
 }
 
 /**
