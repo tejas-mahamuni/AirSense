@@ -95,7 +95,7 @@ export default function WeatherGrid() {
           {cards.map((card, i) => (
             <div
               key={card.label}
-              className="bg-surface-container-lowest rounded-[1.5rem] p-4 shadow-sm border border-outline-variant/10 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+              className="glass-card rounded-[1.5rem] p-4"
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="text-on-surface-variant">{card.icon}</div>
@@ -115,7 +115,7 @@ export default function WeatherGrid() {
       </div>
 
       {/* 🌍 Climate Risk & El Niño Advisory Banner */}
-      <div className="bg-surface-container-low rounded-[3rem] p-6 md:p-10 border border-outline-variant/10 relative overflow-hidden">
+      <div className="glass-card rounded-[3rem] p-6 md:p-10 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full -mr-48 -mt-48 pointer-events-none"></div>
         
         <div className="relative z-10">

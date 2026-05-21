@@ -66,7 +66,7 @@ const InsightEngine = () => {
     ?.sort((a, b) => Number(a.aqi) - Number(b.aqi))[0];
 
   return (
-    <div className="bg-surface-container-lowest rounded-[2rem] p-8 shadow-sm border border-outline-variant/10 relative overflow-hidden group">
+    <div className="glass-card rounded-[2rem] p-8 relative overflow-hidden group">
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl opacity-50 group-hover:opacity-100 transition-opacity"></div>
 
       <div className="relative z-10 flex flex-col md:flex-row gap-8">

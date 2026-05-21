@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { fetchAQIByCity, AQIData } from '@/services/api';
+import { fetchAQIByCity, fetchWeather, fetchForecast, AQIData, WeatherData, ForecastItem } from '@/services/api';
 import { getAQIColor } from '@/utils/colorMap';
+import { useAppStore } from '@/store/useAppStore';
 
 export default function CompareCities() {
+  const { watchlist, addToWatchlist, removeFromWatchlist } = useAppStore();
   const [city1, setCity1] = useState('');
   const [city2, setCity2] = useState('');
-  const [data1, setData1] = useState<AQIData | null>(null);
-  const [data2, setData2] = useState<AQIData | null>(null);
+  const [data1, setData1] = useState<{ aqi: AQIData, weather: WeatherData, rain: number } | null>(null);
+  const [data2, setData2] = useState<{ aqi: AQIData, weather: WeatherData, rain: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -19,8 +21,16 @@ export default function CompareCities() {
         fetchAQIByCity(city1),
         fetchAQIByCity(city2)
       ]);
-      setData1(res1);
-      setData2(res2);
+      
+      const [w1, f1, w2, f2] = await Promise.all([
+        fetchWeather(res1.city.geo[0], res1.city.geo[1]),
+        fetchForecast(res1.city.geo[0], res1.city.geo[1]),
+        fetchWeather(res2.city.geo[0], res2.city.geo[1]),
+        fetchForecast(res2.city.geo[0], res2.city.geo[1])
+      ]);
+
+      setData1({ aqi: res1, weather: w1, rain: f1[0]?.pop || 0 });
+      setData2({ aqi: res2, weather: w2, rain: f2[0]?.pop || 0 });
     } catch (e: any) {
       setError(e.message || 'Comparison failed. Check city names.');
     }
@@ -65,25 +75,50 @@ export default function CompareCities() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative">
           <div className="absolute left-1/2 top-4 bottom-4 w-px bg-outline-variant/20 -translate-x-1/2 hidden sm:block"></div>
           
-          <div className="text-center p-4">
-            <h3 className="font-bold text-xl font-headline mb-4">{data1.city.name}</h3>
-            <div className="inline-flex items-center justify-center w-32 h-32 rounded-full mb-4 shadow-inner" style={{ backgroundColor: getAQIColor(data1.aqi) + '20', border: `4px solid ${getAQIColor(data1.aqi)}` }}>
-              <span className="text-4xl font-black" style={{ color: getAQIColor(data1.aqi) }}>{data1.aqi}</span>
-            </div>
-            <p className="text-xs text-on-surface-variant uppercase tracking-widest font-label font-bold">
-              Dominant: {data1.dominantPollutant.toUpperCase()}
-            </p>
-          </div>
+          {[data1, data2].map((data, idx) => {
+            const cityName = data.aqi.city.name;
+            const isStarred = watchlist.includes(cityName);
+            const toggleStar = () => isStarred ? removeFromWatchlist(cityName) : addToWatchlist(cityName);
+            
+            return (
+              <div key={idx} className="text-center p-4 bg-surface-container-low rounded-2xl shadow-sm border border-outline-variant/5">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <h3 className="font-bold text-xl font-headline truncate max-w-[200px]" title={cityName}>{cityName}</h3>
+                  <button onClick={toggleStar} className="text-xl hover:scale-110 transition-transform focus:outline-none">
+                    {isStarred ? '⭐' : '☆'}
+                  </button>
+                </div>
+                
+                <div className="inline-flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 rounded-full mb-4 shadow-inner" style={{ backgroundColor: getAQIColor(data.aqi.aqi) + '20', border: `4px solid ${getAQIColor(data.aqi.aqi)}` }}>
+                  <span className="text-3xl sm:text-4xl font-black" style={{ color: getAQIColor(data.aqi.aqi) }}>{data.aqi.aqi}</span>
+                </div>
+                <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-label font-bold mb-4">
+                  Primary Pollutant: {data.aqi.dominantPollutant.toUpperCase()}
+                </p>
 
-          <div className="text-center p-4">
-            <h3 className="font-bold text-xl font-headline mb-4">{data2.city.name}</h3>
-            <div className="inline-flex items-center justify-center w-32 h-32 rounded-full mb-4 shadow-inner" style={{ backgroundColor: getAQIColor(data2.aqi) + '20', border: `4px solid ${getAQIColor(data2.aqi)}` }}>
-              <span className="text-4xl font-black" style={{ color: getAQIColor(data2.aqi) }}>{data2.aqi}</span>
-            </div>
-            <p className="text-xs text-on-surface-variant uppercase tracking-widest font-label font-bold">
-              Dominant: {data2.dominantPollutant.toUpperCase()}
-            </p>
-          </div>
+                <div className="grid grid-cols-2 gap-2 text-left">
+                  <div className="bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/10">
+                    <p className="text-[10px] text-outline uppercase font-bold tracking-wider mb-1">Weather</p>
+                    <p className="font-bold text-on-surface text-sm">{data.weather.temp}°C</p>
+                    <p className="text-[10px] text-on-surface-variant capitalize truncate">{data.weather.description}</p>
+                  </div>
+                  <div className="bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/10">
+                    <p className="text-[10px] text-outline uppercase font-bold tracking-wider mb-1">Rain Risk</p>
+                    <p className="font-bold text-on-surface text-sm">{data.rain}%</p>
+                    <p className="text-[10px] text-on-surface-variant">Probability</p>
+                  </div>
+                  <div className="bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/10">
+                    <p className="text-[10px] text-outline uppercase font-bold tracking-wider mb-1">Humidity</p>
+                    <p className="font-bold text-on-surface text-sm">{data.weather.humidity}%</p>
+                  </div>
+                  <div className="bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/10">
+                    <p className="text-[10px] text-outline uppercase font-bold tracking-wider mb-1">Wind</p>
+                    <p className="font-bold text-on-surface text-sm">{data.weather.wind_speed} <span className="text-[10px] font-normal text-on-surface-variant">km/h</span></p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

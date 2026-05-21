@@ -19,7 +19,7 @@ export default function IndoorEstimator() {
   const indoorColor = indoor <= 50 ? '#4CAF50' : indoor <= 100 ? '#FF9800' : '#F44336';
 
   return (
-    <div className="bg-surface-container-lowest rounded-[1.5rem] p-6 shadow-sm border border-outline-variant/10">
+    <div className="glass-card rounded-[1.5rem] p-6">
       <h3 className="text-sm font-semibold font-headline text-on-surface mb-4">🏠 Indoor AQI Estimate</h3>
 
       <div className="flex gap-2 mb-4">

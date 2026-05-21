@@ -11,10 +11,10 @@ const HeatwaveAdvisor: React.FC<HeatwaveAdvisorProps> = ({ analysis }) => {
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={`p-6 rounded-[2rem] border relative overflow-hidden ${
+      className={`p-6 rounded-[2rem] relative overflow-hidden ${
         analysis.severeAlert 
-          ? 'bg-error-container/10 border-error/30 text-error' 
-          : 'bg-surface-container-low border-outline-variant/10'
+          ? 'bg-error-container/10 border border-error/30 text-error' 
+          : 'glass-card'
       }`}
     >
       {/* Background Glow */}
@@ -53,16 +53,20 @@ const HeatwaveAdvisor: React.FC<HeatwaveAdvisorProps> = ({ analysis }) => {
       </div>
 
       <div className="space-y-4 relative z-10">
-        <div>
-          <p className="text-[10px] font-bold text-outline uppercase tracking-widest mb-2 px-1">Outdoor Safety Rules</p>
-          <div className="space-y-2">
-            {analysis.outdoorSafety.map((rule, idx) => (
-              <div key={idx} className="flex items-start gap-2 text-sm font-medium text-on-surface-variant bg-surface-container/40 p-2 rounded-xl">
-                <span className="material-symbols-outlined text-[18px] text-primary">check_circle</span>
-                <span className="leading-tight">{rule}</span>
-              </div>
-            ))}
-          </div>
+        <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10">
+          <p className="text-[11px] font-bold text-primary uppercase tracking-widest mb-3 flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]">smart_toy</span>
+            AI Environmental Briefing
+          </p>
+          <p className="text-sm font-medium text-on-surface-variant leading-relaxed">
+            {analysis.aiBriefing}
+          </p>
+          {analysis.severity === 'severe-heatwave' && (
+            <div className="flex items-start gap-2.5 text-sm font-bold text-error bg-error/10 p-3 rounded-xl border border-error/20 mt-4">
+              <span className="material-symbols-outlined text-[18px] text-error mt-0.5">public</span>
+              <span className="leading-tight">Potential El Niño Event Detected: Global climate anomaly increasing regional heat indices. Immediate disaster response readiness required.</span>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

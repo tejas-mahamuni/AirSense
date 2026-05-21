@@ -7,8 +7,122 @@
 
 @layer base {
   body {
-    @apply bg-background text-on-surface font-body;
+    @apply text-on-surface font-body;
     overflow-x: hidden;
+    min-height: 100vh;
+
+    /* Premium environmental gradient background */
+    background:
+      radial-gradient(ellipse at 10% 0%, rgba(21, 105, 109, 0.08), transparent 50%),
+      radial-gradient(ellipse at 90% 100%, rgba(0, 111, 29, 0.06), transparent 50%),
+      linear-gradient(175deg, #f0f5f6 0%, #f8fafb 35%, #f4f7f8 65%, #eef3f5 100%);
+  }
+}
+
+@layer components {
+  /* ── Production Glassmorphism Card ──────────────────────────────── */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(16px) saturate(1.6);
+    -webkit-backdrop-filter: blur(16px) saturate(1.6);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.09),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.75);
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        transparent 40%
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Glass Navbar ──────────────────────────────────────────────── */
+  .glass-navbar {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  }
+
+  /* ── Glass Modal ───────────────────────────────────────────────── */
+  .glass-modal {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+      0 24px 64px rgba(0, 0, 0, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  /* ── Glass Search Dropdown ─────────────────────────────────────── */
+  .glass-dropdown {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+      0 12px 48px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  /* ── AQI Glow Effects ──────────────────────────────────────────── */
+  .aqi-glow-good {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.06),
+      0 0 24px rgba(76, 175, 80, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+  .aqi-glow-moderate {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.06),
+      0 0 24px rgba(255, 193, 7, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+  .aqi-glow-unhealthy {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.06),
+      0 0 24px rgba(255, 152, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+  .aqi-glow-severe {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.08),
+      0 0 28px rgba(244, 67, 54, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  /* ── Floating Animation ────────────────────────────────────────── */
+  @keyframes float-gentle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .float-animation {
+    animation: float-gentle 6s ease-in-out infinite;
   }
 }
 
@@ -21,6 +135,7 @@
     background: linear-gradient(90deg, #4ade80 0%, #facc15 50%, #f87171 100%);
   }
 
+  /* Legacy glass-panel kept for backward compat */
   .glass-panel {
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(16px);
@@ -49,6 +164,26 @@
   ::-webkit-scrollbar-thumb {
     @apply bg-surface-dim;
     border-radius: 3px;
+  }
+}
+
+/* ── Mobile Performance Optimization ──────────────────────────────── */
+@media (max-width: 768px) {
+  .glass-card {
+    backdrop-filter: blur(10px) saturate(1.4);
+    -webkit-backdrop-filter: blur(10px) saturate(1.4);
+  }
+  .glass-navbar {
+    backdrop-filter: blur(12px) saturate(1.5);
+    -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  }
+  .glass-modal {
+    backdrop-filter: blur(14px) saturate(1.5);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  }
+  .glass-dropdown {
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
   }
 }
 

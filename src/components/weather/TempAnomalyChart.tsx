@@ -20,18 +20,18 @@ const TempAnomalyChart: React.FC<TempAnomalyChartProps> = ({ actual }) => {
       <div className="space-y-8">
         <div className="flex items-end justify-around gap-8 h-40 px-2 pb-6 border-b border-outline-variant/5">
           {/* Normal Bar */}
-          <div className="flex flex-col items-center flex-1 max-w-[80px]">
+          <div className="flex flex-col items-center flex-1 max-w-[80px] justify-end">
             <span className="text-sm font-bold text-on-surface-variant mb-2">{average}°C</span>
             <div className="w-full bg-surface-container-highest rounded-t-2xl h-24 shadow-inner" />
             <span className="mt-3 text-[10px] font-black text-outline uppercase tracking-widest">Normal</span>
           </div>
 
           {/* Today Bar */}
-          <div className="flex flex-col items-center flex-1 max-w-[80px]">
+          <div className="flex flex-col items-center flex-1 max-w-[80px] justify-end">
             <span className={`text-sm font-black mb-2 ${isHigh ? 'text-error' : 'text-primary'}`}>{actual.toFixed(1)}°C</span>
             <motion.div 
               initial={{ height: 0 }}
-              animate={{ height: `${Math.max(20, (actual / 45) * 100)}%` }}
+              animate={{ height: `${Math.max(20, (actual / average) * 96)}px` }}
               className={`w-full rounded-t-2xl relative ${isHigh ? 'bg-error shadow-[0_-8px_20px_-10px_rgba(255,69,58,0.5)]' : 'bg-primary shadow-[0_-8px_20px_-10px_rgba(52,199,89,0.5)]'}`}
             />
             <span className="mt-3 text-[10px] font-black text-on-surface uppercase tracking-widest">Today</span>

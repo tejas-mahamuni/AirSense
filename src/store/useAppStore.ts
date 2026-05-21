@@ -23,6 +23,10 @@ interface AppState {
   watchlist: string[];
   addToWatchlist: (city: string) => void;
   removeFromWatchlist: (city: string) => void;
+  notificationsEnabled: boolean;
+  setNotificationsEnabled: (enabled: boolean) => void;
+  notificationPreferences: { aqi: boolean; weather: boolean; briefing: boolean };
+  setNotificationPreferences: (prefs: Partial<{ aqi: boolean; weather: boolean; briefing: boolean }>) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -51,6 +55,12 @@ export const useAppStore = create<AppState>()(
       removeFromWatchlist: (city) => {
         set({ watchlist: get().watchlist.filter(c => c !== city) });
       },
+      notificationsEnabled: false,
+      setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
+      notificationPreferences: { aqi: true, weather: true, briefing: true },
+      setNotificationPreferences: (prefs) => set({ 
+        notificationPreferences: { ...get().notificationPreferences, ...prefs } 
+      }),
     }),
     { name: 'airsense_store' }
   )

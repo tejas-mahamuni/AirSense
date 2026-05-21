@@ -63,14 +63,14 @@ const EnvironmentalAnalysisModal: React.FC<EnvironmentalAnalysisModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-surface/80 backdrop-blur-xl"
+          className="absolute inset-0 bg-black/20 backdrop-blur-2xl"
         />
         
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 40 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 40 }}
-          className="relative w-full max-w-6xl h-full max-h-[90vh] bg-surface-container-lowest rounded-[3rem] shadow-2xl border border-outline-variant/10 flex flex-col overflow-hidden"
+          className="relative w-full max-w-6xl h-full max-h-[90vh] glass-modal rounded-[3rem] flex flex-col overflow-hidden"
         >
           {/* Header */}
           <div className="flex items-center justify-between p-8 border-b border-outline-variant/5 bg-surface-container-lowest/50 sticky top-0 z-20">

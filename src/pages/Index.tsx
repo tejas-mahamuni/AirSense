@@ -19,13 +19,22 @@ import PopularCities from "@/components/dashboard/PopularCities";
 import EnvironmentalCorrelation from "@/components/dashboard/EnvironmentalCorrelation";
 import AQILegend from "@/components/dashboard/AQILegend";
 import LocationModal from "@/components/layout/LocationModal";
+import AIAQISummary from "@/components/ai/AIAQISummary";
+import AIWeatherSummary from "@/components/ai/AIWeatherSummary";
+import AIDailyBriefing from "@/components/ai/AIDailyBriefing";
+import AQIConfidenceCard from "@/components/dashboard/AQIConfidenceCard";
+import { DailyEnvironmentScore } from "@/components/dashboard/DailyEnvironmentScore";
 import { useAppStore } from "@/store/useAppStore";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { useNotificationScheduler } from "@/hooks/useNotificationScheduler";
 
 const Index = () => {
-  const { activeTab, location } = useAppStore();
+  const { activeTab, location, watchlist, addToWatchlist, removeFromWatchlist } = useAppStore();
   const { loading, showModal, setShowModal, requestLocation } =
     useGeolocation();
+
+  // Start the background notification engine for this dashboard
+  useNotificationScheduler();
 
   // If loading and we don't have a location yet, show detector
   if (loading && !location) {
@@ -76,26 +85,46 @@ const Index = () => {
         <AQIWeatherToggle />
 
         {/* Greeting */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-on-surface tracking-tight mb-1 font-headline">
-            {activeTab === "aqi"
-              ? "🌫️ Air Quality"
-              : activeTab === "weather"
-                ? "🌤️ Weather"
-                : "🔬 Environmental Insights"}
-          </h1>
-          <p className="text-on-surface-variant font-medium text-sm font-body">
-            Live data for {location?.city || "your area"}
-          </p>
+        <div className="mb-10 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-on-surface tracking-tight mb-1 font-headline">
+              {activeTab === "aqi"
+                ? "🌫️ Air Quality"
+                : activeTab === "weather"
+                  ? "🌤️ Weather"
+                  : "🔬 Environmental Insights"}
+            </h1>
+            <p className="text-on-surface-variant font-medium text-sm font-body flex items-center gap-2">
+              Live data for {location?.city || "your area"}
+              
+              {location && (
+                <button 
+                  onClick={() => watchlist.includes(location.city) ? removeFromWatchlist(location.city) : addToWatchlist(location.city)}
+                  className="text-lg hover:scale-110 transition-transform focus:outline-none translate-y-[-1px]"
+                  title={watchlist.includes(location.city) ? "Remove from watchlist" : "Add to watchlist"}
+                >
+                  {watchlist.includes(location.city) ? '⭐' : '☆'}
+                </button>
+              )}
+            </p>
+          </div>
         </div>
 
         {activeTab === "aqi" ? (
           /* ════════ AQI TAB ════════ */
           <div className="space-y-10">
+            {/* AI Daily Briefing */}
+            <AIDailyBriefing />
+
             {/* Hero + Seasonal Context row */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              <HeroCard />
+              <div className="lg:col-span-8 flex flex-col gap-8">
+                <HeroCard />
+                <AQIConfidenceCard />
+                <AIAQISummary />
+              </div>
               <div className="lg:col-span-4 flex flex-col gap-6">
+                <DailyEnvironmentScore />
                 <SeasonalContext />
                 <IndoorEstimator />
               </div>
@@ -125,6 +154,9 @@ const Index = () => {
         ) : activeTab === "weather" ? (
           /* ════════ WEATHER TAB ════════ */
           <div className="space-y-10">
+            {/* AI Weather Summary */}
+            <AIWeatherSummary />
+
             {/* Weather Grid */}
             <WeatherGrid />
 

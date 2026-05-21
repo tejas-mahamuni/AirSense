@@ -3,11 +3,15 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import Maps from "./pages/Maps.tsx";
-import Profile from "./pages/Profile.tsx";
-import NotFound from "./pages/NotFound.tsx";
-import React from "react";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import React, { Suspense, lazy } from "react";
+import PageSkeleton from "@/components/ui/PageSkeleton";
+import { useNotificationScheduler } from "@/hooks/useNotificationScheduler";
+
+const Index = lazy(() => import("./pages/Index.tsx"));
+const Maps = lazy(() => import("./pages/Maps.tsx"));
+const Profile = lazy(() => import("./pages/Profile.tsx"));
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,22 +23,25 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  console.log("[AirSense] App component rendering...");
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/maps" element={<Maps />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+            <Suspense fallback={<PageSkeleton />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/maps" element={<Maps />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

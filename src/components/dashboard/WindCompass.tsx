@@ -10,7 +10,7 @@ export default function WindCompass() {
   const speed = weather.wind_speed;
 
   return (
-    <div className="bg-surface-container-lowest rounded-[1.5rem] p-6 shadow-sm border border-outline-variant/10">
+    <div className="glass-card rounded-[1.5rem] p-6">
       <h3 className="text-sm font-semibold font-headline text-on-surface mb-4">🧭 Wind Direction</h3>
       <div className="flex items-center gap-6">
         <div className="relative w-28 h-28 flex-shrink-0">

@@ -32,6 +32,8 @@ const HeroCard = () => {
   const aqiText = getAQIText(aqiValue);
   const statusTheme = getStatusTheme(aqiData.status);
 
+  const aqiGlowClass = aqiValue <= 50 ? 'aqi-glow-good' : aqiValue <= 100 ? 'aqi-glow-moderate' : aqiValue <= 200 ? 'aqi-glow-unhealthy' : 'aqi-glow-severe';
+
   const handleFeedbackSubmit = (type: string) => {
     setFeedbackGiven(type);
     setShowFeedback(false);
@@ -41,10 +43,10 @@ const HeroCard = () => {
   };
 
   return (
-    <div className="lg:col-span-8 bg-surface-container-lowest rounded-[2.5rem] p-10 shadow-sm border border-outline-variant/5 relative overflow-hidden group">
+    <div className={`lg:col-span-8 glass-card ${aqiGlowClass} rounded-[2.5rem] p-10 relative overflow-hidden group`}>
       {/* Background Glow */}
       <div 
-        className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] opacity-10 transition-colors duration-1000"
+        className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] opacity-15 transition-colors duration-1000"
         style={{ background: aqiColor }}
       ></div>
 

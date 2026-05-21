@@ -37,7 +37,7 @@ const GovernmentAdvisory: React.FC<GovernmentAdvisoryProps> = ({ heatIndex }) =>
           >
             <span className="text-xl shrink-0">{r.icon}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-bold text-on-surface leading-tight mb-0.5">{r.action}</p>
+              <p className="text-sm font-bold text-on-surface leading-tight mb-1">{r.action}</p>
               <span className="text-[9px] font-black uppercase text-outline tracking-tighter">Priority: {r.impact}</span>
             </div>
           </motion.div>

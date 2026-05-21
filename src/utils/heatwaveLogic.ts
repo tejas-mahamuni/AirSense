@@ -12,6 +12,7 @@ export interface HeatwaveAnalysis {
   severityLabel: string;
   severityColor: string;
   severeAlert: boolean;
+  aiBriefing: string;
   citizenAdvisory: string[];
   outdoorSafety: string[];
   governmentActions: string[];
@@ -83,12 +84,15 @@ export function analyzeHeatwave(tempC: number, humidity: number): HeatwaveAnalys
   const citizenAdvisory: string[] = [];
   const outdoorSafety: string[] = [];
   const governmentActions: string[] = [];
+  let aiBriefing = '';
 
   if (severity === 'normal') {
+    aiBriefing = 'The thermal environment is stable with no significant heat anomalies detected. Thermal comfort is optimal for all standard outdoor activities.';
     citizenAdvisory.push('Conditions are comfortable.', 'Stay hydrated as usual.');
     outdoorSafety.push('All outdoor activities are safe.');
     governmentActions.push('Maintain standard public health monitoring.');
   } else if (severity === 'warm') {
+    aiBriefing = 'Elevated temperatures detected. While not severe, prolonged outdoor exposure during peak hours may induce mild heat fatigue. Hydration and shaded breaks are recommended.';
     citizenAdvisory.push(
       'Drink 2–3 litres of water throughout the day.',
       'Wear light, breathable clothing.',
@@ -103,6 +107,7 @@ export function analyzeHeatwave(tempC: number, humidity: number): HeatwaveAnalys
       'Ensure water fountains in public areas are functional.'
     );
   } else if (severity === 'heatwave') {
+    aiBriefing = 'Heatwave conditions confirmed. Thermal stress is significantly elevated. There is a moderate to high risk of heat exhaustion without adequate cooling and hydration interventions.';
     citizenAdvisory.push(
       'Avoid outdoor exposure from 12PM–4PM.',
       'Drink ORS (Oral Rehydration Salts) to stay hydrated.',
@@ -123,6 +128,7 @@ export function analyzeHeatwave(tempC: number, humidity: number): HeatwaveAnalys
     );
   } else {
     // severe-heatwave
+    aiBriefing = 'SEVERE HEAT EMERGENCY DETECTED. Immediate risk of heatstroke. Potential El Niño climate anomaly amplifying regional temperatures. Total restriction of outdoor activities is highly advised.';
     citizenAdvisory.push(
       '🚨 EMERGENCY: Avoid all outdoor activity.',
       'Drink ORS every 30 minutes — do not wait for thirst.',
@@ -152,6 +158,7 @@ export function analyzeHeatwave(tempC: number, humidity: number): HeatwaveAnalys
     severityLabel: severityMap[severity].label,
     severityColor: severityMap[severity].color,
     severeAlert: severity === 'severe-heatwave',
+    aiBriefing,
     citizenAdvisory,
     outdoorSafety,
     governmentActions,

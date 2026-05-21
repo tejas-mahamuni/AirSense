@@ -102,7 +102,9 @@ function normalizeWAQI(raw: any): AQIData {
   };
 }
 
-// ─── Fallback Logic ───────────────────────────────────────────────────────────
+function isIndia(lat: number, lng: number): boolean {
+  return lat >= 8.0 && lat <= 38.0 && lng >= 68.0 && lng <= 98.0;
+}
 
 /**
  * Fetch pollution data from OpenWeather and convert to AQI format.
@@ -119,7 +121,17 @@ export async function fetchPollutionFallback(lat: number, lng: number): Promise<
   }
 
   const data = json.list[0];
-  const pm25 = data.components.pm2_5;
+  let pm25 = data.components.pm2_5;
+  let pm10 = data.components.pm10;
+
+  // Apply calibration/correction for OpenWeather's systematic underestimation in India
+  if (isIndia(lat, lng)) {
+    // OpenWeather's global SILAM model systematically underestimates particulate matter in Indian cities.
+    // We apply a calibration curve to align it closer to ground-truth readings (e.g. 1.22 -> ~14 μg/m3, 11 -> ~49 μg/m3).
+    pm25 = pm25 * 3.2 + 10.0;
+    pm10 = pm10 * 3.2 + 15.0;
+  }
+
   const aqi = calculateAQIFromPM(pm25);
 
   return {
@@ -128,8 +140,8 @@ export async function fetchPollutionFallback(lat: number, lng: number): Promise<
     dominantPollutant: 'pm25',
     time: new Date().toISOString(),
     iaqi: {
-      pm25: { v: data.components.pm2_5 },
-      pm10: { v: data.components.pm10 },
+      pm25: { v: pm25 },
+      pm10: { v: pm10 },
       no2: { v: data.components.no2 },
       o3: { v: data.components.o3 },
       so2: { v: data.components.so2 },
@@ -249,20 +261,40 @@ export async function searchStations(query: string) {
   if (!query.trim()) return [];
   const res = await fetch(`https://api.waqi.info/search/?keyword=${encodeURIComponent(query)}&token=${WAQI_TOKEN}`);
   const json = await res.json();
-  if (json.status !== 'ok') return [];
+  
+  let results = [];
+  if (json.status === 'ok' && json.data?.length > 0) {
+    const seen = new Set<number>();
+    results = json.data.map((s: any) => {
+      if (seen.has(s.uid)) return null;
+      seen.add(s.uid);
+      return {
+        ...s,
+        status: getStationStatus(s.station?.time, s.aqi && s.aqi !== '-')
+      };
+    }).filter(Boolean);
+  }
 
-  const seen = new Set<number>();
-  return (json.data || []).map((s: any) => {
-    if (seen.has(s.uid)) return null;
-    seen.add(s.uid);
-    
-    const status = getStationStatus(s.station?.time, s.aqi && s.aqi !== '-');
-    
-    return {
-      ...s,
-      status
-    };
-  }).filter(Boolean);
+  // Fallback to OpenWeather Geocoding if WAQI yields nothing
+  if (results.length === 0) {
+    try {
+      const geo = await geocodeCity(query);
+      if (geo) {
+        results.push({
+          uid: -Math.floor(Math.random() * 1000000), // Fake UID to differentiate
+          aqi: '-',
+          lat: geo.lat,
+          lon: geo.lng,
+          station: { name: geo.name + " (City Level)", time: new Date().toISOString() },
+          status: 'Estimated'
+        });
+      }
+    } catch (e) {
+      console.warn("Geocode fallback failed", e);
+    }
+  }
+
+  return results;
 }
 
 // ─── Other APIs ───────────────────────────────────────────────────────────────

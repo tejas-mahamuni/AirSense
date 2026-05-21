@@ -17,7 +17,7 @@ export default function SeasonalContext() {
   }
 
   return (
-    <div className="bg-surface-container-lowest rounded-[1.5rem] p-6 shadow-sm border border-outline-variant/10 hover:shadow-md transition-shadow">
+    <div className="glass-card rounded-[1.5rem] p-6">
       <div className="flex items-start gap-4">
         <span className="text-3xl">{emoji}</span>
         <div>

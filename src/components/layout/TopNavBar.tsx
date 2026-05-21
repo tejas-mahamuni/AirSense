@@ -4,6 +4,7 @@ import { searchStations, fetchAQIByCity } from "@/services/api";
 import { useAppStore } from "@/store/useAppStore";
 import { getStatusTheme } from "@/utils/aqiUtils";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { NotificationSettings } from "@/components/layout/NotificationSettings";
 
 const TopNavBar = () => {
   const routeLocation = useLocation();
@@ -72,13 +73,20 @@ const TopNavBar = () => {
         addSearchHistory(data.city.name || cityName);
       }
     } catch {
-      // Fallback: try using geo from search result directly
+      // Fallback: try using geo from search result directly or root lat/lon
       const geo = station.station?.geo;
       if (Array.isArray(geo) && geo.length >= 2) {
         setLocation({
           city: cityName,
           lat: Number(geo[0]),
           lng: Number(geo[1]),
+        });
+        addSearchHistory(cityName);
+      } else if (station.lat !== undefined && station.lon !== undefined) {
+        setLocation({
+          city: cityName,
+          lat: Number(station.lat),
+          lng: Number(station.lon),
         });
         addSearchHistory(cityName);
       }
@@ -110,7 +118,7 @@ const TopNavBar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-sm h-16">
+    <header className="fixed top-0 left-0 w-full z-50 glass-navbar h-16">
       <nav className="flex justify-between items-center px-6 h-full max-w-screen-2xl mx-auto">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center gap-2">
@@ -211,7 +219,7 @@ const TopNavBar = () => {
 
             {/* Dropdown */}
             {showDropdown && (
-              <div className="absolute top-full mt-2 left-0 right-0 bg-surface-container-lowest rounded-2xl shadow-xl border border-outline-variant/10 overflow-hidden z-50 max-h-80 overflow-y-auto">
+              <div className="absolute top-full mt-2 left-0 right-0 glass-dropdown rounded-2xl overflow-hidden z-50 max-h-80 overflow-y-auto">
                 {/* Search History */}
                 {query.length === 0 && searchHistory.length > 0 && (
                   <div className="p-3 border-b border-outline-variant/10">
@@ -287,9 +295,8 @@ const TopNavBar = () => {
             )}
           </div>
 
-          <button className="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center">
-            <span className="material-symbols-outlined">notifications</span>
-          </button>
+          <NotificationSettings />
+
           <Link
             to="/profile"
             className={`hidden md:flex w-8 h-8 rounded-full overflow-hidden border-2 flex items-center justify-center transition-all ${
