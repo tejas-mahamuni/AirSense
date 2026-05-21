@@ -102,8 +102,19 @@ function normalizeWAQI(raw: any): AQIData {
   };
 }
 
-function isIndia(lat: number, lng: number): boolean {
-  return lat >= 8.0 && lat <= 38.0 && lng >= 68.0 && lng <= 98.0;
+const normalizeQuery = (q: string): string => {
+  if (!q) return q;
+  const lower = q.toLowerCase().trim();
+  if (lower.includes('ahilyanagar') || lower.includes('ahilya nagar') || lower.includes('ahilya') || lower.includes('ahilyanagar (city level)')) {
+    return 'Ahmednagar';
+  }
+  return q;
+};
+
+function isIndia(lat: any, lng: any): boolean {
+  const latitude = Number(lat);
+  const longitude = Number(lng);
+  return !isNaN(latitude) && !isNaN(longitude) && latitude >= 8.0 && latitude <= 38.0 && longitude >= 68.0 && longitude <= 98.0;
 }
 
 /**
@@ -230,9 +241,10 @@ export async function fetchAQIByGeo(lat: number, lng: number): Promise<AQIData> 
 }
 
 export async function fetchAQIByCity(city: string): Promise<AQIData> {
+  const normalizedCity = normalizeQuery(city);
   try {
     const res = await fetchWithTimeout(
-      `https://api.waqi.info/search/?keyword=${encodeURIComponent(city)}&token=${WAQI_TOKEN}`
+      `https://api.waqi.info/search/?keyword=${encodeURIComponent(normalizedCity)}&token=${WAQI_TOKEN}`
     );
     const json = await res.json();
 
@@ -258,8 +270,9 @@ export async function fetchAQIByCity(city: string): Promise<AQIData> {
 // ─── Search UI Helpers ────────────────────────────────────────────────────────
 
 export async function searchStations(query: string) {
-  if (!query.trim()) return [];
-  const res = await fetch(`https://api.waqi.info/search/?keyword=${encodeURIComponent(query)}&token=${WAQI_TOKEN}`);
+  const normalizedQuery = normalizeQuery(query);
+  if (!normalizedQuery.trim()) return [];
+  const res = await fetch(`https://api.waqi.info/search/?keyword=${encodeURIComponent(normalizedQuery)}&token=${WAQI_TOKEN}`);
   const json = await res.json();
   
   let results = [];
@@ -268,6 +281,11 @@ export async function searchStations(query: string) {
     results = json.data.map((s: any) => {
       if (seen.has(s.uid)) return null;
       seen.add(s.uid);
+      // Filter out Null Island / Atlantic Ocean coordinates
+      const lat = s.station?.geo?.[0];
+      const lon = s.station?.geo?.[1];
+      if (lat === 0 && lon === 0) return null;
+      
       return {
         ...s,
         status: getStationStatus(s.station?.time, s.aqi && s.aqi !== '-')
@@ -278,8 +296,8 @@ export async function searchStations(query: string) {
   // Fallback to OpenWeather Geocoding if WAQI yields nothing
   if (results.length === 0) {
     try {
-      const geo = await geocodeCity(query);
-      if (geo) {
+      const geo = await geocodeCity(normalizedQuery);
+      if (geo && geo.lat !== 0 && geo.lng !== 0) {
         results.push({
           uid: -Math.floor(Math.random() * 1000000), // Fake UID to differentiate
           aqi: '-',
@@ -340,8 +358,9 @@ export async function fetchForecast(lat: number, lng: number): Promise<ForecastI
 }
 
 export async function geocodeCity(city: string): Promise<{ lat: number; lng: number; name: string } | null> {
+  const normalizedCity = normalizeQuery(city);
   try {
-    const res = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${OWM_KEY}`);
+    const res = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(normalizedCity)}&limit=1&appid=${OWM_KEY}`);
     const json = await res.json();
     return json?.length > 0 ? { lat: json[0].lat, lng: json[0].lon, name: json[0].name } : null;
   } catch { return null; }
