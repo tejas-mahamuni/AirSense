@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { useAQI, useWeather } from '@/hooks/useDataHooks';
 import { detectAnomalies, EnvironmentalState } from '@/services/notifications/anomalyDetection';
+import { showSafeNotification } from '@/utils/notificationHelper';
 
 export const useNotificationScheduler = () => {
   const { notificationsEnabled, notificationPreferences } = useAppStore();
@@ -29,9 +30,8 @@ export const useNotificationScheduler = () => {
           if (hour === 7) {
             const key = `notif_7am_${today}`;
             if (!localStorage.getItem(key)) {
-              new Notification("AirSense Morning Briefing ☀️", {
-                body: `Good morning! It's ${currentTemp}°C and ${condition}. The AQI is currently ${currentAqi}. Tap to view your full day outlook.`,
-                icon: "/airsense.png"
+              showSafeNotification("AirSense Morning Briefing ☀️", {
+                body: `Good morning! It's ${currentTemp}°C and ${condition}. The AQI is currently ${currentAqi}. Tap to view your full day outlook.`
               });
               localStorage.setItem(key, "true");
             }
@@ -39,9 +39,8 @@ export const useNotificationScheduler = () => {
           if (hour === 12) {
             const key = `notif_12pm_${today}`;
             if (!localStorage.getItem(key)) {
-              new Notification("AirSense Midday Update 🌤️", {
-                body: `Midday check-in: The temperature is peaking at ${currentTemp}°C. Stay hydrated and monitor the AQI (${currentAqi}).`,
-                icon: "/airsense.png"
+              showSafeNotification("AirSense Midday Update 🌤️", {
+                body: `Midday check-in: The temperature is peaking at ${currentTemp}°C. Stay hydrated and monitor the AQI (${currentAqi}).`
               });
               localStorage.setItem(key, "true");
             }
@@ -49,9 +48,8 @@ export const useNotificationScheduler = () => {
           if (hour === 21) {
             const key = `notif_9pm_${today}`;
             if (!localStorage.getItem(key)) {
-              new Notification("AirSense Evening Summary 🌙", {
-                body: `Good evening. The current temperature is ${currentTemp}°C. Tomorrow's forecast looks like ${condition}.`,
-                icon: "/airsense.png"
+              showSafeNotification("AirSense Evening Summary 🌙", {
+                body: `Good evening. The current temperature is ${currentTemp}°C. Tomorrow's forecast looks like ${condition}.`
               });
               localStorage.setItem(key, "true");
             }
@@ -91,9 +89,8 @@ export const useNotificationScheduler = () => {
       const now = new Date().getTime();
 
       if (!lastSent || (now - parseInt(lastSent)) > (4 * 60 * 60 * 1000)) {
-        new Notification(anomaly.title || "AirSense Alert", {
-          body: anomaly.body,
-          icon: "/airsense.png"
+        showSafeNotification(anomaly.title || "AirSense Alert", {
+          body: anomaly.body
         });
         localStorage.setItem(cacheKey, now.toString());
       }

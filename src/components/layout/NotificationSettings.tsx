@@ -6,6 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { detectAnomalies } from '@/services/notifications/anomalyDetection';
 import { useAQI, useWeather } from '@/hooks/useDataHooks';
+import { showSafeNotification } from '@/utils/notificationHelper';
 
 export const NotificationSettings: React.FC = () => {
   const { notificationsEnabled, setNotificationsEnabled, notificationPreferences, setNotificationPreferences } = useAppStore();
@@ -88,9 +89,7 @@ export const NotificationSettings: React.FC = () => {
         break;
     }
 
-    if ('Notification' in window) {
-      new Notification(title, { body, icon: '/airsense.png' });
-    }
+    showSafeNotification(title, { body });
     toast.success(`Simulated: ${title}`);
   };
 

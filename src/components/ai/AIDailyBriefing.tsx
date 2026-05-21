@@ -3,6 +3,7 @@ import AIInsightCard from './AIInsightCard';
 import { useAIDailyBriefing } from '@/hooks/useAIInsights';
 import { useAQI } from '@/hooks/useDataHooks';
 import { useAppStore } from '@/store/useAppStore';
+import { showSafeNotification } from '@/utils/notificationHelper';
 
 const AIDailyBriefing: React.FC = () => {
   const { data: aiContent, isLoading, isError } = useAIDailyBriefing();
@@ -25,9 +26,8 @@ const AIDailyBriefing: React.FC = () => {
       const today = new Date().toDateString();
       
       if (lastSent !== today) {
-        new Notification(`AirSense ${timeGreeting} Briefing`, {
-          body: aiContent,
-          icon: '/airsense.png'
+        showSafeNotification(`AirSense ${timeGreeting} Briefing`, {
+          body: aiContent
         });
         localStorage.setItem('last_briefing_notif', today);
       }
