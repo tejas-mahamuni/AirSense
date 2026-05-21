@@ -16,7 +16,16 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
+
+let analyticsInstance: any = null;
+if (typeof window !== "undefined") {
+  try {
+    analyticsInstance = getAnalytics(app);
+  } catch (e) {
+    console.warn("[AirSense] Firebase Analytics is not supported in this environment.", e);
+  }
+}
+export const analytics = analyticsInstance;
 
 let messagingInstance: any = null;
 if (typeof window !== "undefined") {
