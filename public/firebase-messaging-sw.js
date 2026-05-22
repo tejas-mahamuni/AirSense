@@ -1,31 +1,44 @@
 importScripts("https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging-compat.js");
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCOHIKPAt0INEeVeAEARWpttoMO-EXC0UU",
-  authDomain: "airsense-app.firebaseapp.com",
-  projectId: "airsense-app",
-  storageBucket: "airsense-app.firebasestorage.app",
-  messagingSenderId: "275672152038",
-  appId: "1:275672152038:web:107c953880f15875f54827",
-  measurementId: "G-EBE84CF46L"
-};
+// Parse query parameters from service worker script URL
+const urlParams = new URL(location).searchParams;
+const apiKey = urlParams.get("apiKey");
 
-firebase.initializeApp(firebaseConfig);
-
-const messaging = firebase.messaging();
-
-messaging.onBackgroundMessage((payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload
-  );
-  
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: "/airsense.png",
+if (apiKey) {
+  const firebaseConfig = {
+    apiKey: apiKey,
+    authDomain: urlParams.get("authDomain") || "",
+    projectId: urlParams.get("projectId") || "",
+    storageBucket: urlParams.get("storageBucket") || "",
+    messagingSenderId: urlParams.get("messagingSenderId") || "",
+    appId: urlParams.get("appId") || "",
+    measurementId: urlParams.get("measurementId") || ""
   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+  firebase.initializeApp(firebaseConfig);
+
+  try {
+    const messaging = firebase.messaging();
+
+    messaging.onBackgroundMessage((payload) => {
+      console.log(
+        "[firebase-messaging-sw.js] Received background message ",
+        payload
+      );
+      
+      const notificationTitle = payload.notification?.title || "AirSense Alert";
+      const notificationOptions = {
+        body: payload.notification?.body || "",
+        icon: "/airsense.png",
+      };
+
+      self.registration.showNotification(notificationTitle, notificationOptions);
+    });
+  } catch (error) {
+    console.error("[firebase-messaging-sw.js] Failed to initialize messaging:", error);
+  }
+} else {
+  console.warn("[firebase-messaging-sw.js] No Firebase configuration passed in script query parameters. Firebase notifications will be disabled.");
+}
+
