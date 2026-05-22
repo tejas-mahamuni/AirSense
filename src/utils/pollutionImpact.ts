@@ -36,8 +36,13 @@ export function analyzePollutantContributions(
 ): PollutantContribution[] {
   if (!pollutants) return [];
 
+  const allowedKeys = ['pm25', 'pm10', 'no2', 'o3', 'co', 'so2'];
+  const filteredPollutants = Object.entries(pollutants).filter(([key, val]) => 
+    allowedKeys.includes(key.toLowerCase()) && val && typeof val.v === 'number'
+  );
+
   const contributions: PollutantContribution[] = [];
-  const total = Object.values(pollutants).reduce((acc, p) => acc + (p?.v || 0), 0) || 1;
+  const total = filteredPollutants.reduce((acc, [_, p]) => acc + (p?.v || 0), 0) || 1;
 
   const colorMap: Record<string, string> = {
     pm25: '#FF453A',
@@ -66,8 +71,7 @@ export function analyzePollutantContributions(
     so2: 'SO₂',
   };
 
-  for (const [key, val] of Object.entries(pollutants)) {
-    if (!val?.v) continue;
+  for (const [key, val] of filteredPollutants) {
     contributions.push({
       name: labelMap[key] || key.toUpperCase(),
       value: parseFloat(val.v.toFixed(2)),
