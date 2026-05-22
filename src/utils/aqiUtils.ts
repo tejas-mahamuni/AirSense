@@ -26,6 +26,40 @@ export function calculateAQIFromPM(pm25: number): number {
   );
 }
 
+/**
+ * Calculate AQI from PM2.5 and PM10 concentrations using Indian National AQI (CPCB) breakpoints.
+ */
+export function calculateIndianAQI(pm25: number, pm10: number = 0): number {
+  if (typeof pm25 !== 'number' || pm25 < 0) pm25 = 0;
+  if (typeof pm10 !== 'number' || pm10 < 0) pm10 = 0;
+
+  const getSubIndexPM25 = (val: number): number => {
+    if (val <= 0) return 0;
+    if (val <= 30) return (50 / 30) * val;
+    if (val <= 60) return 50 + ((100 - 50) / (60 - 30)) * (val - 30);
+    if (val <= 90) return 100 + ((200 - 100) / (90 - 60)) * (val - 60);
+    if (val <= 120) return 200 + ((300 - 200) / (120 - 90)) * (val - 90);
+    if (val <= 250) return 300 + ((400 - 300) / (250 - 120)) * (val - 120);
+    return 400 + ((500 - 400) / (500 - 250)) * (val - 250);
+  };
+
+  const getSubIndexPM10 = (val: number): number => {
+    if (val <= 0) return 0;
+    if (val <= 50) return (50 / 50) * val;
+    if (val <= 100) return 50 + ((100 - 50) / (100 - 50)) * (val - 50);
+    if (val <= 250) return 100 + ((200 - 100) / (250 - 100)) * (val - 100);
+    if (val <= 350) return 200 + ((300 - 200) / (350 - 250)) * (val - 250);
+    if (val <= 430) return 300 + ((400 - 300) / (430 - 350)) * (val - 350);
+    return 400 + ((500 - 400) / (500 - 430)) * (val - 430);
+  };
+
+  const aqi25 = getSubIndexPM25(pm25);
+  const aqi10 = getSubIndexPM10(pm10);
+  
+  return Math.round(Math.max(aqi25, aqi10));
+}
+
+
 export type AQIStatus = 'Live' | 'Outdated' | 'No Data' | 'Estimated';
 
 /**

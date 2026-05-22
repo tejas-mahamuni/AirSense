@@ -10,8 +10,16 @@ const AIDailyBriefing: React.FC = () => {
   const { data: aqiData } = useAQI();
   
   const hour = new Date().getHours();
-  const isMorning = hour < 12;
-  const timeGreeting = isMorning ? "Morning" : "Evening";
+  let timeGreeting = "Night";
+  if (hour >= 4 && hour < 5) {
+    timeGreeting = "Early Morning";
+  } else if (hour >= 5 && hour < 12) {
+    timeGreeting = "Morning";
+  } else if (hour >= 12 && hour < 17) {
+    timeGreeting = "Afternoon";
+  } else if (hour >= 17 && hour < 20) {
+    timeGreeting = "Evening";
+  }
 
   const fallbackInsight = aqiData 
     ? `Good ${timeGreeting}! The current AQI is ${aqiData.aqi}. Please take standard precautions based on this level.` 

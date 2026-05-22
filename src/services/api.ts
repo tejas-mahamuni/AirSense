@@ -1,4 +1,4 @@
-import { calculateAQIFromPM, getStationStatus, AQIStatus } from '@/utils/aqiUtils';
+import { calculateAQIFromPM, calculateIndianAQI, getStationStatus, AQIStatus } from '@/utils/aqiUtils';
 
 const WAQI_TOKEN = import.meta.env.VITE_WAQI_TOKEN;
 const OWM_KEY = import.meta.env.VITE_OWM_KEY;
@@ -143,7 +143,7 @@ export async function fetchPollutionFallback(lat: number, lng: number): Promise<
     pm10 = pm10 * 3.2 + 15.0;
   }
 
-  const aqi = calculateAQIFromPM(pm25);
+  const aqi = isIndia(lat, lng) ? calculateIndianAQI(pm25, pm10) : calculateAQIFromPM(pm25);
 
   return {
     aqi: aqi,

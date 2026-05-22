@@ -24,8 +24,12 @@ Next 3 days temperatures: ${tempTrend}
 Task: Write a very concise, professional forecast summary (max 2 sentences) describing what to expect over the next few days in human terms. Don't use markdown or bullet points. Just plain text.`;
 };
 
-export const buildDailyBriefingPrompt = (aqiData: AQIData, weatherData: WeatherData, city: string, isMorning: boolean): string => {
-  const timeOfDay = isMorning ? "Morning" : "Evening";
+export const buildDailyBriefingPrompt = (
+  aqiData: AQIData, 
+  weatherData: WeatherData, 
+  city: string, 
+  timeOfDay: 'Early Morning' | 'Morning' | 'Afternoon' | 'Evening' | 'Night'
+): string => {
   return `You are a smart city AI providing a daily briefing.
 Time of Day: ${timeOfDay}
 City: ${city}
@@ -39,3 +43,5 @@ Format as:
 • [Point 2]
 • [Point 3]`;
 };
+
+
